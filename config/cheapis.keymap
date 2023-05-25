@@ -1,0 +1,179 @@
+/*
+ * Copyright (c) 2023 ozkan (github.com/ozkan)
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+
+
+
+// Layers
+#define _COLEMAK       0
+#define _LOWER         1
+#define _RAISE         2
+#define _SPACE_RIGHT   3
+#define _SPACE_LEFT    4
+#define _NAVIGATION    5
+#define _ADJUST        6
+
+// Using layer taps on thumbs, having quick tap as well helps w/ repeating space
+&lt {
+  quick_tap_ms = <200>;
+};
+
+
+/ {
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+        tri_layer {
+            if-layers = <1 2>; //lower and raise
+            then-layer = <6>;  // adjust
+        };
+    };
+
+    behaviors {
+        ht: hold_tap {
+            label = "hold_tap";
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <200>;
+            quick-tap-ms = <150>;
+            global-quick-tap;
+            bindings = <&kp>, <&kp>;
+        };
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+       // ╭──────┬──────┬──────┬──────┬──────╮      ╭──────┬──────┬──────┬──────┬──────╮
+       // │  Q   │  W   │  F   │  P   │  G   │      │  J   │  L   │  U   │  Y   │  BSC │
+       // ├──────┼──────┼──────┼──────┼──────┤      ├──────┼──────┼──────┼──────┼──────┤
+       // │  A   │  R   │  S   │NAV T │  D   │      │  H   │  N   │  E   │  I   │  O   │
+       // ├──────┼──────┼──────┼──────┼──────┤      ├──────┼──────┼──────┼──────┼──────┤
+       // │ALT Z │CTL X │SFT C │  V   │  B   │      │  K   │  M   │SFT , │CTL . │ALT / │
+       // ╰──────┴──────┴──────┼──────┼──────┴─╮  ╭─┴──────┼──────┼──────┴──────┴──────╯
+       //                      │LOWER │ SPACE  │  │ SPACE  │RAISE │
+       //                      ╰──────┴────────╯  ╰────────┴──────╯
+        default_layer {
+            bindings = <
+                &kp Q      &kp W       &kp F       &kp P              &kp G                           &kp J &kp L  &kp U                 &kp Y          &kp BSPC
+                &kp A      &kp R       &kp S       &lt _NAVIGATION T  &kp D                           &kp H &kp N  &kp E                 &kp SQT        &kp O               
+                &ht LALT Z &ht LCTRL X &ht LSHFT C &kp V              &kp B                           &kp K &kp M  &ht RSHFT NON_US_HASH &ht RCTRL FSLH &ht LALT RS(N7)     
+                                      &lt _LOWER TAB    &lt _SPACE_LEFT SPACE                &lt _SPACE_RIGHT SPACE          &mo _RAISE     
+            >;
+
+        };
+
+        lower_layer {
+        // ╭──────┬──────┬──────┬──────┬──────╮         ╭──────┬──────┬──────┬──────┬──────╮
+        // │ ESC  │      │      │      │      │         │  (   │  )   │  =   │  &   │  |   │
+        // ├──────┼──────┼──────┼──────┼──────┤         ├──────┼──────┼──────┼──────┼──────┤
+        // │      │      │      │      │      │         │  {   │  }   │  _   │  $   │   #  │
+        // ├──────┼──────┼──────┼──────┼──────┤         ├──────┼──────┼──────┼──────┼──────┤
+        // │      │      │      │      │      │         │  [   │  ]   │  <   │  >   │  \   │
+        // ╰──────┴──────┴──────┼──────┼──────┴─╮     ╭─┴──────┼──────┼──────┴──────┴──────╯
+        //                      │LOWER │ SPACE  │     │ SPACE  │RAISE │
+        //                      ╰──────┴────────╯     ╰────────┴──────╯            
+            bindings = <
+                &kp ESC  &trans   &trans        &trans          &trans                        &kp RS(N8)  &kp RS(N9)      &kp RS(N0)        &kp RS(N6)           &kp RA(EQUAL)  
+                &trans   &trans   &trans        &trans          &trans                        &kp RA(N7)  &kp RA(N0)      &kp PLUS          &kp RA(N4)           &kp RA(N3)     
+                &trans   &trans   &trans        &trans          &trans                        &kp RA(N8)  &kp RA(N9)      &kp NON_US_BSLH   &kp RS(NON_US_BSLH)  &kp RA(MINUS)  
+                                   &lt _LOWER TAB    &lt _SPACE_LEFT SPACE               &kp RET      &mo _RAISE     
+            >;
+            
+            
+        };
+        
+        raise_layer {
+        // ╭──────┬──────┬──────┬──────┬──────╮         ╭──────┬──────┬──────┬──────┬──────╮
+        // │   /  │  1   │  2   │  3   │  -   │         │  F1  │  F2  │  F3  │  F4  │      │
+        // ├──────┼──────┼──────┼──────┼──────┤         ├──────┼──────┼──────┼──────┼──────┤
+        // │   *  │  4   │  5   │  6   │  +   │         │  F5  │  F6  │  F7  │  F8  │   '  │
+        // ├──────┼──────┼──────┼──────┼──────┤         ├──────┼──────┼──────┼──────┼──────┤
+        // │   %  │  7   │  8   │  9   │  0   │         │  F9  │  F10 │ F11  │  F1  │      │
+        // ╰──────┴──────┴──────┼──────┼──────┴─╮     ╭─┴──────┼──────┼──────┴──────┴──────╯
+        //                      │LOWER │ SPACE  │     │ SPACE  │RAISE │
+        //                      ╰──────┴────────╯     ╰────────┴──────╯             
+            bindings = <
+                &kp AMPS    &kp N1    &kp N2        &kp N3         &kp KP_MINUS                      &kp F1  &kp F2                  &kp F3            &kp F4       &trans   
+                &kp MINUS   &kp N4    &kp N5        &kp N6         &kp KP_PLUS                       &kp F5  &kp F6                  &kp F7            &kp F8       &kp LS(N2)  
+                &kp PRCNT   &kp N7    &kp N8        &kp N9         &kp N0                            &kp F9  &kp F10                 &kp F11           &kp F12      &trans  
+                                           &lt _LOWER TAB    &lt _SPACE_LEFT SPACE            &lt _SPACE_RIGHT SPACE          &mo _RAISE  
+            >;
+
+        };
+
+        space_right_layer {
+        // ╭──────┬──────┬──────┬──────┬──────╮         ╭──────┬──────┬──────┬──────┬──────╮
+        // │   `  │      │  €   │  £   │  Ğ   │         │      │      │      │      │ DEL  │
+        // ├──────┼──────┼──────┼──────┼──────┤         ├──────┼──────┼──────┼──────┼──────┤
+        // │   !  │  @   │  Ş   │  ₺   │      │         │      │      │      │      │  "   │
+        // ├──────┼──────┼──────┼──────┼──────┤         ├──────┼──────┼──────┼──────┼──────┤
+        // │      │      │  Ç   │      │      │         │      │      │      │      │      │
+        // ╰──────┴──────┴──────┼──────┼──────┴─╮     ╭─┴──────┼──────┼──────┴──────┴──────╯
+        //                      │LOWER │ SPACE  │     │ SPACE  │RAISE │
+        //                      ╰──────┴────────╯     ╰────────┴──────╯                
+            bindings = <
+                 &kp RA(NON_US_HASH)  &trans           &kp RA(E)        &kp  RA(N2)     &kp LBKT                       &trans            &trans                  &trans          &trans   &kp DEL  
+                 &kp EXCL             &kp RA(Q)  &kp SEMI         &kp  RA(T)      &trans                               &trans            &trans                  &trans          &trans   &kp GRAVE   
+                 &trans               &trans     &ht LSHFT  DOT   &trans          &trans                               &trans            &trans                  &trans          &trans   &trans   
+                                                                  &lt _LOWER TAB    &lt _SPACE_LEFT SPACE             &lt _SPACE_RIGHT SPACE          &mo _RAISE     
+                >;
+        };
+
+        space_left_layer {
+        // ╭──────┬──────┬──────┬──────┬──────╮         ╭──────┬──────┬──────┬──────┬──────╮
+        // │      │      │      │      │      │         │      │      │  Ü   │      │   |  │
+        // ├──────┼──────┼──────┼──────┼──────┤         ├──────┼──────┼──────┼──────┼──────┤
+        // │      │      │      │      │      │         │      │      │  I   │  I   │   #  │
+        // ├──────┼──────┼──────┼──────┼──────┤         ├──────┼──────┼──────┼──────┼──────┤
+        // │      │      │      │      │      │         │      │      │  ^   │  ~   │   \  │
+        // ╰──────┴──────┴──────┼──────┼──────┴─╮     ╭─┴──────┼──────┼──────┴──────┴──────╯
+        //                      │LOWER │ SPACE  │     │  WIN   │RAISE │
+        //                      ╰──────┴────────╯     ╰────────┴──────╯               
+            bindings = <
+                       &trans    &trans     &trans         &trans             &trans                     &trans          &trans      &kp RBKT            &trans         &kp LS(SLASH)  
+                       &trans    &trans     &trans         &trans             &trans                     &trans          &trans      &kp LS(I)           &kp I          &kp COMMA       
+                       &trans    &trans     &trans         &trans             &trans                     &trans          &trans      &ht RSHFT RS(N3)    &kp RA(RBKT)   &kp UNDER       
+                                        &lt _LOWER TAB    &lt _SPACE_LEFT SPACE             &kp RIGHT_GUI          &mo _RAISE    
+            >;
+
+        };
+
+        navigation_layer {
+        // ╭──────┬──────┬──────┬──────┬──────╮         ╭──────┬──────┬──────┬──────┬──────╮
+        // │ ESC  │      │      │      │      │         │C_PREV│ PGUP │  UP  │ MPLY │ MUTE │
+        // ├──────┼──────┼──────┼──────┼──────┤         ├──────┼──────┼──────┼──────┼──────┤
+        // │      │      │      │NAV T │      │         │ HOME │ LEFT │ DOWN │ RGHT │ END  │
+        // ├──────┼──────┼──────┼──────┼──────┤         ├──────┼──────┼──────┼──────┼──────┤
+        // │      │      │      │      │      │         │C_NEXT│PGDOWN│      │VLDOWN│ VLUP │
+        // ╰──────┴──────┴──────┼──────┼──────┴─╮     ╭─┴──────┼──────┼──────┴──────┴──────╯
+        //                      │LOWER │ SPACE  │     │ SPACE  │RAISE │
+        //                      ╰──────┴────────╯     ╰────────┴──────╯         
+            bindings = <
+             &trans    &trans     &trans           &trans       &trans       &kp C_PREV              &kp PG_UP   &kp UP                  &kp C_PLAY_PAUSE       &kp C_PLAY_PAUSE         
+             &trans    &trans     &trans           &trans       &trans       &kp HOME                &kp LEFT    &kp DOWN                &kp RIGHT              &kp END        
+             &trans    &trans     &trans           &trans       &trans       &kp C_NEXT              &kp PG_DN   &none                   &kp C_VOL_DN           &kp C_VOL_UP   
+                                       &kp LALT  &lt _LOWER TAB    &lt _SPACE_LEFT SPACE           &lt _SPACE_RIGHT SPACE          &mo _RAISE    
+            >;
+        }; 
+
+        adjust_layer {         
+            bindings = <
+                &trans  &trans  &trans  &trans  &trans      &trans  &trans            &trans  &trans  &trans
+                &trans  &trans  &trans  &trans  &trans      &trans  &trans            &trans  &trans  &trans
+                &trans  &trans  &trans  &trans  &trans      &sys_reset   &bootloader  &trans  &trans  &trans
+                                         &trans  &trans    &trans  &trans 
+            >;
+        };
+    };
+};
+
+
+
+
+
+

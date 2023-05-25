@@ -1,0 +1,8 @@
+file_format: "1"
+id: cheapis
+name: CHEAPIS
+type: shield
+url: https://github.com/ozkan
+requires: [pro_micro]
+features:
+  - keys

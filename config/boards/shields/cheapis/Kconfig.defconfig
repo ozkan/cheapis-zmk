@@ -1,0 +1,6 @@
+if SHIELD_CHEAPIS
+
+config ZMK_KEYBOARD_NAME
+    default "Cheapis"
+
+endif
